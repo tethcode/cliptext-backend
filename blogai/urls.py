@@ -18,6 +18,7 @@ urlpatterns = [
     path('all-blogs/', views.api_blog_list, name='api_blog_list'),
     path('blog-details/<int:pk>/', views.api_blog_details, name='api_blog_details'),
     path('generate-blog/', views.generate_blog, name='generate_blog'),
+    path('blogs/<int:pk>/delete/', views.api_blog_delete, name='api_blog_delete'),
 ]
 
 urlpatterns += [
