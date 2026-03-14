@@ -8,7 +8,7 @@ python-dotenv
 whitenoise
 cloudinary
 django-cloudinary-storage
-google-generativeai
 supadata
 pillow
 setuptools<81
+google-genai

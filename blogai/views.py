@@ -1,8 +1,7 @@
 import os
 import re
 import requests
-import google.generativeai as genai
-
+from google import genai
 from datetime import timedelta
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -24,7 +23,7 @@ from .serializers import BlogPostSerializer, ForgotPasswordSerializer, ResetPass
 # --- AI & Transcription Config ---
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SUPADATA_API_KEY = os.environ.get("SUPADATA_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
+genai.Client(api_key=GEMINI_API_KEY)
 
 class ProfilePictureUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser) # Crucial for images
