@@ -1,4 +1,3 @@
-import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save, post_delete
@@ -49,25 +48,3 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
-# 1. Delete file from filesystem when Profile object is deleted
-@receiver(post_delete, sender=Profile)
-def auto_delete_file_on_delete(sender, instance, **kwargs):
-    if instance.profile_pic:
-        if os.path.isfile(instance.profile_pic.path):
-            os.remove(instance.profile_pic.path)
-
-# 2. Delete old file from filesystem when photo is updated or removed
-@receiver(pre_save, sender=Profile)
-def auto_delete_file_on_change(sender, instance, **kwargs):
-    if not instance.pk:
-        return False
-
-    try:
-        old_file = sender.objects.get(pk=instance.pk).profile_pic
-    except sender.DoesNotExist:
-        return False
-
-    new_file = instance.profile_pic
-    if not old_file == new_file:
-        if old_file and os.path.isfile(old_file.path):
-            os.remove(old_file.path)
