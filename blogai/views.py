@@ -1,7 +1,7 @@
 import os
 import re
 import requests
-from google import genai
+from google import genai # New library
 from datetime import timedelta
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -23,7 +23,9 @@ from .serializers import BlogPostSerializer, ForgotPasswordSerializer, ResetPass
 # --- AI & Transcription Config ---
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SUPADATA_API_KEY = os.environ.get("SUPADATA_API_KEY")
-genai.Client(api_key=GEMINI_API_KEY)
+
+# Initialize the Client properly
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 class ProfilePictureUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser) # Crucial for images
@@ -56,17 +58,22 @@ def get_transcription(link):
 
 def generate_blog_from_transcription(transcription):
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        # Use the new client-based syntax
         prompt = (
             "Based on the following transcript, first provide a catchy Title on the first line, "
             "then write a professional blog post.\n\nTranscript: " + transcription
         )
-        response = model.generate_content(prompt)
+        
+        # models.generate_content is the correct method for the new SDK
+        response = client.models.generate_content(
+            model='gemini-2.0-flash', 
+            contents=prompt
+        )
+        
         return response.text.strip()
     except Exception as e:
         print(f"Gemini Error: {e}")
         return None
-
 # ----------------- AUTH VIEWS -----------------
 
 @api_view(['POST'])
