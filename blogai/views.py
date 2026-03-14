@@ -106,7 +106,7 @@ def api_signup(request):
 
         return Response({'token': token.key, 'username': user.username}, status=status.HTTP_201_CREATED)
     except Exception as email_err:
-            print(f"Email failed to send: {email_err}")
+        print(f"Email failed to send: {email_err}")
 
 
 @api_view(['POST'])
