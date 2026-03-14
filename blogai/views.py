@@ -74,10 +74,13 @@ def generate_blog_from_transcription(transcription):
 @permission_classes([AllowAny])
 def api_signup(request):
     data = request.data
+    password = data.get('password')
+    password_confirm = data.get('confirmPassword')
     try:
+        if password != password_confirm:
+            return Response({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
         if not data.get('username') or not data.get('email') or not data.get('password'):
             return Response({'error': 'Username, email, and password are required'}, status=status.HTTP_400_BAD_REQUEST)
-
         if User.objects.filter(username=data.get('username')).exists():
             return Response({'error': 'Username already taken'}, status=status.HTTP_400_BAD_REQUEST)
         if User.objects.filter(email=data.get('email')).exists():
@@ -91,7 +94,7 @@ def api_signup(request):
         token, _ = Token.objects.get_or_create(user=user)
 
         # Send welcome email
-        html_content = render_to_string("emails/signup_email.html", {"username": user.username, "frontend_url": "http://localhost:3000", "year": timezone.now().year})
+        html_content = render_to_string("emails/signup_email.html", {"username": user.username, "frontend_url": "https://cliptext.vercel.app", "year": timezone.now().year})
         msg = EmailMultiAlternatives(
             subject="Welcome to ClipText!",
             body=f"Hello {user.username}, welcome to ClipText!",
@@ -99,11 +102,11 @@ def api_signup(request):
             to=[user.email]
         )
         msg.attach_alternative(html_content, "text/html")
-        msg.send()
+        msg.send(fail_silently=True)
 
         return Response({'token': token.key, 'username': user.username}, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as email_err:
+            print(f"Email failed to send: {email_err}")
 
 
 @api_view(['POST'])
@@ -150,7 +153,7 @@ class ForgotPasswordView(APIView):
                 expires_at=timezone.now() + timedelta(hours=1)
             )
 
-            reset_link = f"http://localhost:3000/reset-password/{token.token}"
+            reset_link = f"https://cliptext.vercel.app/reset-password/{token.token}"
 
             html_message = render_to_string(
                 "emails/reset-password_email.html",
