@@ -48,17 +48,17 @@ CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary_storage',  # Move this here (above staticfiles)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', # Keep this below cloudinary_storage
     'blogai',
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
-    'cloudinary_storage',
     'cloudinary',
 ]
 
@@ -117,7 +117,8 @@ WSGI_APPLICATION = 'blogger.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600
+        conn_max_age=600,
+        ssl_require=True
     )
 }
 
@@ -141,7 +142,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Replace your old storage settings with this:
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
@@ -180,8 +189,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # The directory where collectstatic will collect static files for deployment
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
