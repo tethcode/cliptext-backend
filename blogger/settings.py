@@ -26,12 +26,16 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-default-key-for-dev")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', "https://cliptext.vercel.app", ".pxxl.app"]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', "cliptext.vercel.app", ".pxxl.app"]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://cliptext.vercel.app",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://cliptext.vercel.app",
+    "https://cliptext-backend.onrender.com"
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -64,7 +68,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon": "5/hour",
+        "anon": "100/days",
     },
 }
 
@@ -166,7 +170,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 
 # This is where Django will look for static files in your apps
-STATIC_FILES_DIRS = [
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
