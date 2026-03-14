@@ -11,3 +11,6 @@ psycopg2-binary==2.9.10
 ytmdl
 whitenoise==6.7.0
 dj-database-url
+cloudinary
+django-cloudinary-storage
+Pillow

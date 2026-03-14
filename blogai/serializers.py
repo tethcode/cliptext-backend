@@ -4,21 +4,22 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 class BlogPostSerializer(serializers.ModelSerializer):
-    # 'source' maps the field to the correct model relationship
-    profile_pic = serializers.ImageField(source='user.profile.image', read_only=True)
+    profile_pic = serializers.SerializerMethodField()
     username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = BlogPost
-        fields = [
-            'id', 
-            'youtube_title', 
-            'youtube_link', 
-            'generated_content', 
-            'created_at', 
-            'profile_pic', 
-            'username'
-        ]
+        fields = ['id', 'youtube_title', 'youtube_link', 'generated_content', 'created_at', 'profile_pic', 'username']
+
+    def get_profile_pic(self, obj):
+        request = self.context.get('request')
+        # Check if the user has a profile and an image
+        if hasattr(obj.user, 'profile') and obj.user.profile.profile_pic:
+            url = obj.user.profile.profile_pic.url
+            # If using Cloudinary, .url returns the full link automatically.
+            # If local, request.build_absolute_uri makes it a full link.
+            return request.build_absolute_uri(url) if request else url
+        return None
 
 class ForgotPasswordSerializer(serializers.Serializer):
     username = serializers.CharField()

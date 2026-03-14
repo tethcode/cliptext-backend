@@ -26,6 +26,13 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 SUPADATA_API_KEY = os.environ.get("SUPADATA_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 
+class ProfilePictureUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser) # Crucial for images
+
+    def post(self, request, format=None):
+        # Your upload logic here
+        pass
+
 def get_video_id(url):
     pattern = r"(?:v=|\/)([0-9A-Za-z_-]{11}).*"
     match = re.search(pattern, url)
