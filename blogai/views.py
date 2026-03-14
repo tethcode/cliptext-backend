@@ -66,7 +66,7 @@ def generate_blog_from_transcription(transcription):
         
         # models.generate_content is the correct method for the new SDK
         response = client.models.generate_content(
-            model='gemini-2.0-flash', 
+            model='gemini-2.5-flash-lite', 
             contents=prompt
         )
         
