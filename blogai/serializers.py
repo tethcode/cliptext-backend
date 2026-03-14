@@ -12,13 +12,19 @@ class BlogPostSerializer(serializers.ModelSerializer):
         fields = ['id', 'youtube_title', 'youtube_link', 'generated_content', 'created_at', 'profile_pic', 'username']
 
     def get_profile_pic(self, obj):
-        request = self.context.get('request')
-        # Check if the user has a profile and an image
+        # Access the profile through the user relationship
         if hasattr(obj.user, 'profile') and obj.user.profile.profile_pic:
             url = obj.user.profile.profile_pic.url
-            # If using Cloudinary, .url returns the full link automatically.
-            # If local, request.build_absolute_uri makes it a full link.
-            return request.build_absolute_uri(url) if request else url
+            
+            # If the URL is already a full Cloudinary link, just return it.
+            if url.startswith('http'):
+                return url
+            
+            # Fallback for local development
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(url)
+            return url
         return None
 
 class ForgotPasswordSerializer(serializers.Serializer):
