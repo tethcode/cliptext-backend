@@ -94,19 +94,19 @@ def api_signup(request):
         token, _ = Token.objects.get_or_create(user=user)
 
         # Send welcome email
-        html_content = render_to_string("emails/signup_email.html", {"username": user.username, "frontend_url": "https://cliptext.vercel.app", "year": timezone.now().year})
-        msg = EmailMultiAlternatives(
-            subject="Welcome to ClipText!",
-            body=f"Hello {user.username}, welcome to ClipText!",
-            from_email="noreply@cliptext.com",
-            to=[user.email]
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=True)
+       # html_content = render_to_string("emails/signup_email.html", {"username": user.username, "frontend_url": "https://cliptext.vercel.app", "year": timezone.now().year})
+        #msg = EmailMultiAlternatives(
+           # subject="Welcome to ClipText!",
+           # body=f"Hello {user.username}, welcome to ClipText!",
+           # from_email="noreply@cliptext.com",
+           # to=[user.email]
+       # )
+       # msg.attach_alternative(html_content, "text/html")
+       # msg.send(fail_silently=True)
 
         return Response({'token': token.key, 'username': user.username}, status=status.HTTP_201_CREATED)
-    except Exception as email_err:
-        print(f"Email failed to send: {email_err}")
+    except Exception as e:
+        print(f"ERROR: {e}")
 
 
 @api_view(['POST'])
